@@ -11,7 +11,7 @@ import time
 import datetime
 from colorama import Fore
 import platform
-import google.generativeai as genai
+from openai import OpenAI
 
 y = Fore.LIGHTYELLOW_EX
 b = Fore.LIGHTBLUE_EX
@@ -29,8 +29,23 @@ with open("config/config.json", "r") as file:
     gemini_enabled_channels = config["gemini"]["enabled_channels"]
     gemini_enabled_users = config["gemini"]["enabled_users"]
 
-genai.configure(api_key=gemini_api_key)
-gemini_model = genai.GenerativeModel('gemini-pro')
+client = OpenAI(
+    api_key=gemini_api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
+
+def generate_response(message):
+    response = client.chat.completions.create(
+    model="gemini-2.5-flash",
+    messages=[
+        {"role": "system", "content": "You are a actual discord user, who is chatting with other users. Reply in msg language with emojis whenever required"},
+        {
+            "role": "user",
+            "content": message
+        }
+    ]
+    )
+    return response.choices[0].message.content
 
 def save_config(config):
     with open("config/config.json", "w") as file:
@@ -100,8 +115,8 @@ async def on_message(message):
     if message.author != bot.user and str(message.author.id) not in config["remote-users"]:
         if str(message.author.id) in gemini_enabled_users or str(message.channel.id) in gemini_enabled_channels:
             try:
-                response = gemini_model.generate_content(message.content)
-                await message.reply(response.text)
+                response = generate_response(message.content)
+                await message.reply(response)
             except Exception as e:
                 print(f"Error generating Gemini response: {e}")
                 await message.reply(f"> **[**ERROR**]**: Unable to get Gemini response. Error: `{str(e)}`", delete_after=5)

@@ -3,10 +3,7 @@ from discord.ext import commands
 import ctypes
 import json
 import os
-import random
-import requests
 import asyncio
-import string
 import time
 import datetime
 from colorama import Fore
@@ -197,7 +194,7 @@ async def remoteuser(ctx, action: str, users: discord.User=None):
         return
 
     if action not in ["ADD", "REMOVE"]:
-        await ctx.send(f"> **[**ERROR**]**: Invalid action. Use `ADD` or `REMOVE`.\n> __Command__: `remoteuser ADD|REMOVE <@user(s)>`", delete_after=5)
+        await ctx.send("> **[**ERROR**]**: Invalid action. Use `ADD` or `REMOVE`.\n> __Command__: `remoteuser ADD|REMOVE <@user(s)>`", delete_after=5)
         return
     
     if action.upper() == "ADD":
@@ -224,11 +221,11 @@ async def gemini(ctx, action: str, target: discord.User or discord.TextChannel =
     await ctx.message.delete()
 
     if action not in ["ON", "OFF"]:
-        await ctx.send(f"> **[**ERROR**]**: Invalid action. Use `ON` or `OFF`.\n> __Command__: `gemini ON|OFF <@user|#channel>`", delete_after=5)
+        await ctx.send("> **[**ERROR**]**: Invalid action. Use `ON` or `OFF`.\n> __Command__: `gemini ON|OFF <@user|#channel>`", delete_after=5)
         return
 
     if not target:
-        await ctx.send(f"> **[**ERROR**]**: Please specify a user or channel.\n> __Command__: `gemini ON|OFF <@user|#channel>`", delete_after=5)
+        await ctx.send("> **[**ERROR**]**: Please specify a user or channel.\n> __Command__: `gemini ON|OFF <@user|#channel>`", delete_after=5)
         return
 
     target_id = str(target.id)
@@ -257,7 +254,7 @@ async def afk(ctx, status: str, *, message: str=None):
     await ctx.message.delete()
 
     if status not in ["ON", "OFF"]:
-        await ctx.send(f"> **[**ERROR**]**: Invalid action. Use `ON` or `OFF`.\n> __Command__: `afk ON|OFF <message>`", delete_after=5)
+        await ctx.send("> **[**ERROR**]**: Invalid action. Use `ON` or `OFF`.\n> __Command__: `afk ON|OFF <message>`", delete_after=5)
         return
 
     if status.upper() == "ON":
@@ -284,7 +281,7 @@ async def changeprefix(ctx, *, new_prefix: str=None):
     await ctx.message.delete()
 
     if not new_prefix:
-        await ctx.send(f"> **[**ERROR**]**: Invalid command.\n> __Command__: `changeprefix <prefix>`", delete_after=5)
+        await ctx.send("> **[**ERROR**]**: Invalid command.\n> __Command__: `changeprefix <prefix>`", delete_after=5)
         return
     
     config['prefix'] = new_prefix

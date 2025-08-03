@@ -11,12 +11,27 @@ from colorama import Fore
 import platform
 from openai import OpenAI
 from prompt import SYSTEM_PROMPT
+import logging
 
 y = Fore.LIGHTYELLOW_EX
 b = Fore.LIGHTBLUE_EX
 w = Fore.LIGHTWHITE_EX
 
 __version__ = "3.2"
+
+# Configure logging
+log_dir = "logs"
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(log_dir, "selfbot.log")),
+        logging.StreamHandler() # Also print to console
+    ]
+)
 
 start_time = datetime.datetime.now(datetime.timezone.utc)
 next_reply_time = {}
@@ -56,17 +71,17 @@ def selfbot_menu(bot):
         os.system('cls')
     else:
         os.system('clear')
-    print(f"""\n{Fore.RESET}
+    logging.info(f"""\n{Fore.RESET}
                             ██████╗ ████████╗██╗ ██████╗     ████████╗ ██████╗  ██████╗ ██╗     
                            ██╔═══██╗╚══██╔══╝██║██╔═══██╗    ╚══██╔══╝██╔═══██╗██╔═══██╗██║     
                            ██║██╗██║   ██║   ██║██║   ██║       ██║   ██║   ██║██║   ██║██║     
                            ██║██║██║   ██║   ██║██║   ██║       ██║   ██║   ██║██║   ██║██║     
-                           ╚█║████╔╝   ██║   ██║╚██████╔╝       ██║   ╚██████╔╝╚██████╔╝███████╗
+                           ╚█║████╔╝   ██║   ██║╚██████╔╝       ██║    ╚██████╔╝╚██████╔╝███████╗
                             ╚╝╚═══╝    ╚═╝   ╚═╝ ╚═════╝        ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝\n""".replace('█', f'{b}█{y}'))
-    print(f"""{y}------------------------------------------------------------------------------------------------------------------------
+    logging.info(f"""{y}------------------------------------------------------------------------------------------------------------------------
 {w}raadev {b}|{w} https://github.com/AstraaDev {b}|{w} https://github.com/AstraaDev {b}|{w} https://github.com/AstraaDev {b}|{w} https://github.com
 {y}------------------------------------------------------------------------------------------------------------------------\n""")
-    print(f"""{y}[{b}+{y}]{w} SelfBot Information:\n
+    logging.info(f"""{y}[{b}+{y}]{w} SelfBot Information:\n
 \t{y}[{w}#{y}]{w} Version: v{__version__}
 \t{y}[{w}#{y}]{w} Logged in as: {bot.user} ({bot.user.id})
 \t{y}[{w}#{y}]{w} Cached Users: {len(bot.users)}
@@ -76,10 +91,10 @@ def selfbot_menu(bot):
 \t{y}[{w}#{y}]{w} Remote Users Configured:""")
     if config["remote-users"]:
         for i, user_id in enumerate(config["remote-users"], start=1):
-            print(f"\t\t{y}[{w}{i}{y}]{w} User ID: {user_id}")
+            logging.info(f"\t\t{y}[{w}{i}{y}]{w} User ID: {user_id}")
     else:
-        print(f"\t\t{y}[{w}-{y}]{w} No remote users configured.")
-    print(f"""
+        logging.info(f"\t\t{y}[{w}-{y}]{w} No remote users configured.")
+    logging.info(f"""
 \t{y}[{w}#{y}]{w} AFK Status: {'Enabled' if config["afk"]["enabled"] else 'Disabled'}
 \t{y}[{w}#{y}]{w} AFK Message: "{config["afk"]["message"]}"\n
 \t{y}[{w}#{y}]{w} Total Commands Loaded: 9\n\n
@@ -119,18 +134,18 @@ async def on_message(message):
             
             if channel_id in next_reply_time and current_time < next_reply_time[channel_id]:
                 return # Skip if not enough time has passed since the last scheduled reply
-
+            
             try:
                 response = generate_response(message.content)
-                print(f"Sending response {response=}")
+                logging.info(f"Sending response {response=}")
                 await message.reply(response)
                 
                 # Schedule the next reply time
                 delay = random.randint(60, 300) # Random delay between 1 and 5 minutes (60-300 seconds)
-                print(f"Msg delay of {delay=}")
+                logging.info(f"Msg delay of {delay=}")
                 next_reply_time[channel_id] = current_time + delay
             except Exception as e:
-                print(f"Error generating Gemini response: {e}")
+                logging.error(f"Error generating Gemini response: {e}")
                 await message.reply(f"> **[**ERROR**]**: Unable to get Gemini response. Error: `{str(e)}`", delete_after=5)
         return
 

@@ -122,10 +122,12 @@ async def on_message(message):
 
             try:
                 response = generate_response(message.content)
+                print(f"Sending response {response=}")
                 await message.reply(response)
                 
                 # Schedule the next reply time
                 delay = random.randint(60, 300) # Random delay between 1 and 5 minutes (60-300 seconds)
+                print(f"Msg delay of {delay=}")
                 next_reply_time[channel_id] = current_time + delay
             except Exception as e:
                 print(f"Error generating Gemini response: {e}")

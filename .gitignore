@@ -31,3 +31,4 @@ dist-ssr
 .vercel
 config.json
 prompt.py
+__pycache__

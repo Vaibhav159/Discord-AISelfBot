@@ -99,7 +99,6 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    print(message.content, message.author.id)
     if config["afk"]["enabled"]:
         if bot.user in message.mentions and message.author != bot.user:
             await message.reply(config["afk"]["message"])
@@ -126,7 +125,7 @@ async def on_message(message):
                 await message.reply(response)
                 
                 # Schedule the next reply time
-                delay = random.randint(60, 180) # Random delay between 1 and 5 minutes (60-300 seconds)
+                delay = random.randint(60, 300) # Random delay between 1 and 5 minutes (60-300 seconds)
                 next_reply_time[channel_id] = current_time + delay
             except Exception as e:
                 print(f"Error generating Gemini response: {e}")

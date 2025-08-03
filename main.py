@@ -9,6 +9,7 @@ import datetime
 from colorama import Fore
 import platform
 from openai import OpenAI
+from prompt import SYSTEM_PROMPT
 
 y = Fore.LIGHTYELLOW_EX
 b = Fore.LIGHTBLUE_EX
@@ -33,9 +34,9 @@ client = OpenAI(
 
 def generate_response(message):
     response = client.chat.completions.create(
-    model="gemini-2.5-flash",
+    model="gemini-2.5-flash-lite",
     messages=[
-        {"role": "system", "content": "You are a actual discord user, who is chatting with other users. Reply in msg language with emojis whenever required"},
+        {"role": "system", "content": SYSTEM_PROMPT},
         {
             "role": "user",
             "content": message
@@ -96,6 +97,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    print(message.content, message.author.id)
     if config["afk"]["enabled"]:
         if bot.user in message.mentions and message.author != bot.user:
             await message.reply(config["afk"]["message"])

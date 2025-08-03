@@ -30,3 +30,4 @@ dist-ssr
 *.mp4
 .vercel
 config.json
+prompt.py
